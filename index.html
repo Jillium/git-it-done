@@ -20,6 +20,24 @@
 
 
   <main class="flex-row justify-space-between">
+    <div class="col-12 col-md-4">
+      
+      <!-- Card element that displays the searchbar-->
+      <div class="card">
+        <h3 class="card-header text-uppercase">Search By User</h3>
+        <form id="user-form" class="card-body">
+          <label class="form-label" for="username">Username</label>
+          <input name="username" id="username" type="text" autofocus="true" class="form-input" />
+          <button type="submit" class="btn">Get User</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- element that displays the repositories for the selected user once we have submitted the form-->
+    <div class="col-12 col-md-8">
+      <h2 class="subtitle">Showing Repositories for: <span id="repo-search-term"></span></h2>
+      <div id="repos-container" class="list-group"></div>
+    </div>
 
   </main>
 
