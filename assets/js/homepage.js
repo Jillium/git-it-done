@@ -50,6 +50,7 @@ var getUserRepos = function (user) {
 
     }
     })
+    // if there is an error at all the catch function alerts the user
     .catch(function(error) {
         //Notice this `.catch()` getting chained onto the end of the `then()` method
         alert("Unable to connect to Github");
