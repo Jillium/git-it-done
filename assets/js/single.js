@@ -1,10 +1,37 @@
 // need this to append issues to the page 
 var issueContainerEl = document.querySelector("#issues-container");
+// need this to show if there are more than 30 issues 
+var limitWarningEl = document.querySelector("#limit-warning");
+// where to show repo name 
+var repoNameEl = document.querySelector("#repo-name");
+
+
+
+
+
+var getRepoName = function() {
+    // query string from our search
+    var queryString = document.location.search;
+    var repoName = queryString.split("=")[1];
+    getRepoIssues(repoName);
+    repoNameEl.textContent = repoName;
+
+//display repo name on the page 
+    if (repoName) {
+     repoNameEl.textContent = repoName;
+     getRepoIssues(repoName);   
+}
+else {
+    // if no repo was given, redirect to the homepage
+    document.location.replace("./index.html");
+}
+};
+
 
 
 // function takes in a repo name as a parameter 
 var getRepoIssues = function(repo) {
-    console.log(repo);
+    
     // variable holds the link for the api input and adds the repo we are searching to it 
     var apiUrl = "https://api.github.com/repos/" + repo + "/issues?direction=asc";
     
@@ -15,14 +42,21 @@ var getRepoIssues = function(repo) {
             response.json().then(function(data) {
                 // pass response data to dom function 
                 displayIssues(data);
+
+                // check if api has paginated issues- github only allows 30 at a time so this means if there are paginated issues there are more than 30
+                if (response.headers.get("Link")) {
+                    // display warning if there are more than 30 issues 
+                    displayWarning(repo);
+                }
             });
         }
         // request was not succesful 
         else {
-            alert("There was a problem with your request!");
+            document.location.replace("./index.html");
         }
-    });
-};
+
+       
+});
 
 //this function accepts a parameter called issues - can call this function after a succesful https request 
 var displayIssues = function(issues) {
@@ -67,6 +101,23 @@ var displayIssues = function(issues) {
         // append to page 
         issueContainerEl.appendChild(issueEl);
     }
-}
+}}
 
-getRepoIssues("jillium/run-buddy");
+
+// function to display a warning if there are more than 30 issues 
+var displayWarning = function(repo) {
+    // add text to the warning container
+    limitWarningEl.textContent = "To see more than 30 issues, visit ";
+
+    //create a link element 
+    var linkEl = document.createElement("a");
+    // add text and link to link element 
+    linkEl.textContent = "See More Issues on GitHub.com";
+    linkEl.setAttribute("href", "https://github.com/" + repo + "/issues");
+    linkEl.setAttribute("target", "_blank");
+
+    // append to warning container
+    limitWarningEl.appendChild(linkEl);
+};
+
+getRepoName();
