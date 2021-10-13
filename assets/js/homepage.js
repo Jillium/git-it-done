@@ -1,6 +1,8 @@
 // variables for form elements 
 var userFormEl = document.querySelector("#user-form");
 var nameInputEl = document.querySelector("#username");
+// variable for div holding the language buttons 
+var languageButtonsEl = document.querySelector("#language-buttons");
 
 // variables to display search results in the right column
 var repoContainerEl = document.querySelector("#repos-container");
@@ -27,6 +29,19 @@ var formSubmitHandler = function (event) {
         alert("Please enter a Github username");
     }
 
+}
+
+//function to handle language button clicks
+var buttonClickHandler = function(event) {
+    // get which button is clicked on the click
+    var language = event.target.getAttribute("data-language");
+    // pass the value we just received to the getFeaturedRepos function 
+    if (language) {
+        getFeaturedRepos(language);
+
+        //clear old content
+        repoContainerEl.textContent = "";
+    }
 }
 
 var getUserRepos = function (user) {
@@ -111,5 +126,38 @@ var displayRepos = function (repos, searchTerm) {
     }
 }
 
+
+var getFeaturedRepos = function(language) {
+    // api call to search for featured repo by language 
+    var apiUrl = "https://api.github.com/search/repositories?q=" + language + "+is:featured&sort=help-wanted-issues";
+
+    // call that fetches the data from the link above 
+    fetch(apiUrl).then(function(response) {
+        // chedk if response is ok or not 
+        if (response.ok) {
+            //convert response to json 
+            response.json().then(function(data) {
+               //dipslay languages that the request pulls
+               displayRepos(data.items, language);
+            });
+            // if ok show console log
+            console.log(response);
+        } 
+        else {
+            // if not ok show error 
+            alert('Error: GitHub User Not Found');
+        }
+    });
+};
+
+
+
+
+
+
+
 // runs form SubmitHandler function when form is submitted 
 userFormEl.addEventListener("submit", formSubmitHandler);
+
+// event listener that will run buttonClickHandler function when buttons are clicked 
+languageButtonsEl.addEventListener("click", buttonClickHandler);
